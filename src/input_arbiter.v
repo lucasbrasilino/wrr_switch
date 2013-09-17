@@ -1,21 +1,13 @@
-///////////////////////////////////////////////////////////////////////////////
-// vim:set shiftwidth=3 softtabstop=3 expandtab:
-// $Id: input_arbiter.v 5240 2009-03-14 01:50:42Z grg $
-//
-// Module: input_arbiter.v
-// Project: NF2.1
-// Description: Goes round-robin around the input queues and services one pkt
-//              out of each (if available). Note that this is unfair for queues
-//              that always receive small packets since they pile up!
-//
-///////////////////////////////////////////////////////////////////////////////
+/* vim:set shiftwidth=3 softtabstop=3 expandtab: */
 `timescale 1ns/1ps
+
   module input_arbiter
     #(parameter DATA_WIDTH = 64,
       parameter CTRL_WIDTH=DATA_WIDTH/8,
       parameter UDP_REG_SRC_WIDTH = 2,
       parameter STAGE_NUMBER = 2,
-      parameter NUM_QUEUES = 8
+      //parameter NUM_QUEUES = 8 // CPU queues are disconnected by now
+      parameter NUM_QUEUES = 4
       )
 
    (// --- data path interface
@@ -65,27 +57,8 @@
     input                              in_wr_7,
     output                             in_rdy_7,
 
-/****  not used
-    // --- Interface to SATA
-    input  [DATA_WIDTH-1:0]            in_data_5,
-    input  [CTRL_WIDTH-1:0]            in_ctrl_5,
-    input                              in_wr_5,
-    output                             in_rdy_5,
-
-    // --- Interface to the loopback queue
-    input  [DATA_WIDTH-1:0]            in_data_6,
-    input  [CTRL_WIDTH-1:0]            in_ctrl_6,
-    input                              in_wr_6,
-    output                             in_rdy_6,
-
-    // --- Interface to a user queue
-    input  [DATA_WIDTH-1:0]            in_data_7,
-    input  [CTRL_WIDTH-1:0]            in_ctrl_7,
-    input                              in_wr_7,
-    output                             in_rdy_7,
-*****/
-
     // --- Register interface
+/**** We won't use register interface by now
     input                              reg_req_in,
     input                              reg_ack_in,
     input                              reg_rd_wr_L_in,
@@ -99,7 +72,7 @@
     output  [`UDP_REG_ADDR_WIDTH-1:0]  reg_addr_out,
     output  [`CPCI_NF2_DATA_WIDTH-1:0] reg_data_out,
     output  [UDP_REG_SRC_WIDTH-1:0]    reg_src_out,
-
+****/
 
     // --- Misc
 
@@ -154,6 +127,9 @@
 
    reg                                 eop;
 
+   wire                                gcd;
+   wire                                max_weight;
+
    // ------------ Modules -------------
 
    generate
@@ -178,6 +154,7 @@
    end // block: in_arb_queues
    endgenerate
 
+/**** No regs, by now
    in_arb_regs
    #(
       .DATA_WIDTH(DATA_WIDTH),
@@ -203,7 +180,7 @@
       .out_data         (out_data),
       .out_rdy          (out_rdy),
       .eop              (eop),
-
+****/
       .clk              (clk),
       .reset            (reset)
    );
@@ -215,47 +192,50 @@
    assign in_ctrl[0]         = in_ctrl_0;
    assign in_wr[0]           = in_wr_0;
    assign in_rdy_0           = !nearly_full[0];
-
+/***
    assign in_data[1]         = in_data_1;
    assign in_ctrl[1]         = in_ctrl_1;
    assign in_wr[1]           = in_wr_1;
    assign in_rdy_1           = !nearly_full[1];
-
-   assign in_data[2]         = in_data_2;
-   assign in_ctrl[2]         = in_ctrl_2;
-   assign in_wr[2]           = in_wr_2;
-   assign in_rdy_2           = !nearly_full[2];
-
+****/
+   assign in_data[1]         = in_data_2;
+   assign in_ctrl[1]         = in_ctrl_2;
+   assign in_wr[1]           = in_wr_2;
+   assign in_rdy_2           = !nearly_full[1];
+/****
    assign in_data[3]         = in_data_3;
    assign in_ctrl[3]         = in_ctrl_3;
    assign in_wr[3]           = in_wr_3;
    assign in_rdy_3           = !nearly_full[3];
-
-   assign in_data[4]         = in_data_4;
-   assign in_ctrl[4]         = in_ctrl_4;
-   assign in_wr[4]           = in_wr_4;
-   assign in_rdy_4           = !nearly_full[4];
-
+****/
+   assign in_data[2]         = in_data_4;
+   assign in_ctrl[2]         = in_ctrl_4;
+   assign in_wr[2]           = in_wr_4;
+   assign in_rdy_4           = !nearly_full[2];
+/****
    assign in_data[5]         = in_data_5;
    assign in_ctrl[5]         = in_ctrl_5;
    assign in_wr[5]           = in_wr_5;
    assign in_rdy_5           = !nearly_full[5];
-
-   assign in_data[6]         = in_data_6;
-   assign in_ctrl[6]         = in_ctrl_6;
-   assign in_wr[6]           = in_wr_6;
-   assign in_rdy_6           = !nearly_full[6];
-
+****/
+   assign in_data[3]         = in_data_6;
+   assign in_ctrl[3]         = in_ctrl_6;
+   assign in_wr[3]           = in_wr_6;
+   assign in_rdy_6           = !nearly_full[3];
+/****
    assign in_data[7]         = in_data_7;
    assign in_ctrl[7]         = in_ctrl_7;
    assign in_wr[7]           = in_wr_7;
    assign in_rdy_7           = !nearly_full[7];
-
+****/
    /* disable regs for this module */
    assign cur_queue_plus1    = (cur_queue == NUM_QUEUES-1) ? 0 : cur_queue + 1;
 
    assign fifo_out_ctrl_sel  = fifo_out_ctrl[cur_queue];
    assign fifo_out_data_sel  = fifo_out_data[cur_queue];
+
+   assign gcd = 1;
+   assign max_weight = 8;
 
    always @(*) begin
       state_next     = state;
@@ -321,7 +301,3 @@
    end
 
 endmodule // input_arbiter
-
-// Local Variables:
-// verilog-library-directories:(".")
-// End:
