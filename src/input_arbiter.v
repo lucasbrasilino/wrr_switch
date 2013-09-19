@@ -7,7 +7,8 @@
       parameter UDP_REG_SRC_WIDTH = 2,
       parameter STAGE_NUMBER = 2,
       //parameter NUM_QUEUES = 8 // CPU queues are disconnected by now
-      parameter NUM_QUEUES = 4
+      parameter NUM_QUEUES = 4,
+      parameter MAX_WEIGHT = 4
       )
 
    (// --- data path interface
@@ -93,6 +94,7 @@
 
    // ------------ Internal Params --------
    parameter NUM_QUEUES_WIDTH = log2(NUM_QUEUES);
+   parameter MAX_WEIGHT_WIDTH = log2(MAX_WEIGHT);
 
    parameter NUM_STATES = 1;
    parameter IDLE = 0;
@@ -129,6 +131,7 @@
 
    wire                                gcd;
    wire                                max_weight;
+   reg [MAX_WEIGHT_WIDTH:0]            cur_weight; 
 
    // ------------ Modules -------------
 
@@ -235,7 +238,7 @@
    assign fifo_out_data_sel  = fifo_out_data[cur_queue];
 
    assign gcd = 1;
-   assign max_weight = 8;
+   assign max_weight = MAX_WEIGHT;
 
    always @(*) begin
       state_next     = state;
@@ -284,7 +287,9 @@
    always @(posedge clk) begin
       if(reset) begin
          state <= IDLE;
-         cur_queue <= 0;
+         //cur_queue <= 0;
+         cur_queue <= -1;
+         cur_weight <= 0;
          fifo_out_ctrl_prev <= 1;
          out_wr <= 0;
          out_ctrl <= 1;
