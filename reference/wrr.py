@@ -16,7 +16,7 @@ def schedule(cw,gcd,maxi,index,queues):
 
 index = -1
 cw = 0;
-queues = [("MAC3",4),("MAC2",3),("MAC1",2),("MAC0",1)]
+queues = [("MAC0",1),("MAC1",2),("MAC2",3),("MAC3",4)]
 results = []
 maxi = 4;
 gcd=1

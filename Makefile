@@ -21,4 +21,7 @@ include/registers.v: include/project.xml
 sw:
 	$(MAKE) -C sw
 
+clean:
+	$(MAKE) -C sw clean
+
 .PHONY:	all sw regs

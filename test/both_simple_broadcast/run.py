@@ -23,17 +23,17 @@ for i in range(num_broadcast):
 
     nftest_send_phy('nf2c0', pkt)
     nftest_expect_phy('nf2c1', pkt)
-    if not isHW():
-        nftest_expect_phy('nf2c2', pkt)
-        nftest_expect_phy('nf2c3', pkt)
+#    if not isHW():
+#        nftest_expect_phy('nf2c2', pkt)
+#        nftest_expect_phy('nf2c3', pkt)
 
 nftest_barrier()
 
 total_errors = 0
 
-tmp = nftest_regread_expect(reg_defines.MAC_GRP_1_TX_QUEUE_NUM_PKTS_SENT_REG(), num_broadcast)
-tmp = nftest_regread_expect(reg_defines.MAC_GRP_2_TX_QUEUE_NUM_PKTS_SENT_REG(), num_broadcast)
-tmp = nftest_regread_expect(reg_defines.MAC_GRP_3_TX_QUEUE_NUM_PKTS_SENT_REG(), num_broadcast)
-tmp = nftest_regread_expect(reg_defines.SWITCH_OP_LUT_NUM_MISSES_REG(), num_broadcast)
+#tmp = nftest_regread_expect(reg_defines.MAC_GRP_1_TX_QUEUE_NUM_PKTS_SENT_REG(), num_broadcast)
+#tmp = nftest_regread_expect(reg_defines.MAC_GRP_2_TX_QUEUE_NUM_PKTS_SENT_REG(), num_broadcast)
+#tmp = nftest_regread_expect(reg_defines.MAC_GRP_3_TX_QUEUE_NUM_PKTS_SENT_REG(), num_broadcast)
+#tmp = nftest_regread_expect(reg_defines.SWITCH_OP_LUT_NUM_MISSES_REG(), num_broadcast)
 
 nftest_finish()

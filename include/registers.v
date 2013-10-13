@@ -1,10 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Module: registers.v
-// Project: Reference Switch (reference_switch)
+// Project: WRR Queue Switch (wrr_switch)
 // Description: Project specific register defines
 //
-//              Reference Switch
+//              WRR Queue Switch
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -16,9 +16,9 @@
 `define DEVICE_MAJOR       1
 `define DEVICE_MINOR       0
 `define DEVICE_REVISION    0
-`define DEVICE_PROJ_DIR    "reference_switch"
-`define DEVICE_PROJ_NAME   "Reference Switch"
-`define DEVICE_PROJ_DESC   "Reference Switch"
+`define DEVICE_PROJ_DIR    "wrr_switch"
+`define DEVICE_PROJ_NAME   "WRR Queue Switch"
+`define DEVICE_PROJ_DESC   "WRR Queue Switch"
 
 
 // -------------------------------------
@@ -365,8 +365,8 @@
 `define DMA_NUM_TIMEOUTS       16'h5
 
 // Name: in_arb
-// Description: Round-robin input arbiter
-// File: lib/verilog/core/input_arbiter/rr_input_arbiter/xml/rr_input_arbiter.xml
+// Description: Weighted round-robin input arbiter
+// File: projects/wrr_switch/include/input_arbiter.xml
 `define IN_ARB_NUM_PKTS_SENT       6'h0
 `define IN_ARB_LAST_PKT_WORD_0_HI  6'h1
 `define IN_ARB_LAST_PKT_WORD_0_LO  6'h2
