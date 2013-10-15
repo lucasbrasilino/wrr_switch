@@ -23,9 +23,9 @@ for i in range(num_broadcast):
 
     nftest_send_phy('nf2c0', pkt)
     nftest_expect_phy('nf2c1', pkt)
-#    if not isHW():
-#        nftest_expect_phy('nf2c2', pkt)
-#        nftest_expect_phy('nf2c3', pkt)
+    if not isHW():
+        nftest_expect_phy('nf2c2', pkt)
+        nftest_expect_phy('nf2c3', pkt)
 
 nftest_barrier()
 

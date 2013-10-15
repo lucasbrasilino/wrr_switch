@@ -6,9 +6,9 @@
       parameter CTRL_WIDTH=DATA_WIDTH/8,
       parameter UDP_REG_SRC_WIDTH = 2,
       parameter STAGE_NUMBER = 2,
-      //parameter NUM_QUEUES = 8 // CPU queues are disconnected by now
       parameter NUM_QUEUES = 8,
-      parameter MAX_WEIGHT = 16
+      parameter MAX_WEIGHT = 7,
+      parameter GCD = 1
       )
 
    (// --- data path interface
@@ -112,10 +112,9 @@
    wire [DATA_WIDTH-1:0]               fifo_out_data[NUM_QUEUES-1:0];
    reg [NUM_QUEUES-1:0]                rd_en;
 
-   wire [NUM_QUEUES_WIDTH:0]         cur_queue_plus1;
-   reg [NUM_QUEUES_WIDTH:0]          cur_queue;
-   reg [NUM_QUEUES_WIDTH:0]          cur_queue_next;
-   wire [1:0]                          cur_queue_mod;
+   wire [NUM_QUEUES_WIDTH:0]           cur_queue_plus1;
+   reg [NUM_QUEUES_WIDTH:0]            cur_queue;
+   reg [NUM_QUEUES_WIDTH:0]            cur_queue_next;
 
    reg [NUM_STATES-1:0]                state;
    reg [NUM_STATES-1:0]                state_next;
@@ -132,12 +131,10 @@
 
    reg                                 eop;
 
-   wire                                gcd;
-   wire [3:0]                          max_weight;
-   reg [3:0]                           cur_weight; 
-   reg [3:0]                           cur_weight_next; 
-   wire [3:0]                          queue_weight[MAX_WEIGHT-1:0];
-   wire [3:0]                          queue_weight_sel;
+   reg [MAX_WEIGHT_WIDTH:0]            cur_weight; 
+   reg [MAX_WEIGHT_WIDTH:0]            cur_weight_next; 
+   wire [MAX_WEIGHT_WIDTH:0]           queue_weight[NUM_QUEUES-1:0];
+   wire [MAX_WEIGHT_WIDTH:0]           queue_weight_sel;
 
    // ------------ Modules -------------
 
@@ -163,7 +160,6 @@
    end // block: in_arb_queues
    endgenerate
 
-/**** No regs, by now
    in_arb_regs
    #(
       .DATA_WIDTH(DATA_WIDTH),
@@ -192,8 +188,6 @@
       .clk              (clk),
       .reset            (reset)
    );
-******/
-
 
    // ------------- Logic ------------
 
@@ -237,18 +231,19 @@
    assign in_wr[7]           = in_wr_7;
    assign in_rdy_7           = !nearly_full[7];
 
-   /* disable regs for this module */
    assign cur_queue_plus1    = (cur_queue == NUM_QUEUES-1) ? 0 : cur_queue + 1;
 
    assign fifo_out_ctrl_sel  = fifo_out_ctrl[cur_queue];
    assign fifo_out_data_sel  = fifo_out_data[cur_queue];
 
-   assign gcd = 1'b1;
-   assign max_weight = MAX_WEIGHT;
-   assign queue_weight[2'b00] = 1;
-   assign queue_weight[2'b01] = 2;
-   assign queue_weight[2'b10] = 3;
-   assign queue_weight[2'b11] = 4;
+   assign queue_weight[3'b000] = 1;
+   assign queue_weight[3'b001] = 2;
+   assign queue_weight[3'b010] = 3;
+   assign queue_weight[3'b011] = 4;
+   assign queue_weight[3'b100] = 5;
+   assign queue_weight[3'b101] = 6;
+   assign queue_weight[3'b110] = 7;
+   assign queue_weight[3'b111] = 7;
    assign queue_weight_sel = queue_weight[cur_queue];
 
    always @(*) begin
@@ -270,7 +265,7 @@
         end
         SELECT_QUEUE_1: begin
             if (cur_queue == 0) begin
-               cur_weight_next = cur_weight - 1;
+               cur_weight_next = cur_weight - GCD;
                state_next = SELECT_QUEUE_2;
             end
             else
@@ -278,7 +273,7 @@
          end
          SELECT_QUEUE_2: begin
                if ((cur_weight[3] == 1'b1) || (cur_weight == 0)) begin
-                  cur_weight_next = 4;
+                  cur_weight_next = MAX_WEIGHT;
                end
                state_next = SELECT_QUEUE_3;
          end
@@ -291,7 +286,6 @@
                state_next = SELECT_QUEUE_0;
          end
         end
-        /* cycle between input queues until one is not empty */
         Q_EMPT_TEST: begin
            if(!empty[cur_queue] && out_rdy) begin
               state_next = WR_PKT;
@@ -329,7 +323,7 @@
       if(reset) begin
          state <= SELECT_QUEUE_0;
          //cur_queue <= 0;
-         cur_queue <= 3'b111;
+         cur_queue <= 3'b1111;
          cur_weight <= 0;
          fifo_out_ctrl_prev <= 1;
          out_wr <= 0;
