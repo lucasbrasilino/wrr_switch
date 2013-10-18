@@ -237,11 +237,11 @@
    assign fifo_out_data_sel  = fifo_out_data[cur_queue];
 
    assign queue_weight[3'b000] = 1;
-   assign queue_weight[3'b001] = 2;
-   assign queue_weight[3'b010] = 3;
-   assign queue_weight[3'b011] = 4;
-   assign queue_weight[3'b100] = 5;
-   assign queue_weight[3'b101] = 6;
+   assign queue_weight[3'b001] = 1;
+   assign queue_weight[3'b010] = 1;
+   assign queue_weight[3'b011] = 7;
+   assign queue_weight[3'b100] = 7;
+   assign queue_weight[3'b101] = 7;
    assign queue_weight[3'b110] = 7;
    assign queue_weight[3'b111] = 7;
    assign queue_weight_sel = queue_weight[cur_queue];
@@ -260,7 +260,7 @@
       case(state)
 
         SELECT_QUEUE_0: begin
-            cur_queue_next = {cur_queue_plus1[1:0]};
+            cur_queue_next = {cur_queue_plus1[2:0]};
             state_next = SELECT_QUEUE_1;
         end
         SELECT_QUEUE_1: begin

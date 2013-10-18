@@ -13,19 +13,21 @@ for i in range(4):
     routerMAC.append("00:ca:fe:00:00:0%d"%(i+1))
     routerIP.append("192.168.%s.40"%i)
 
-num_broadcast = 20
+num_broadcast = 10
 
 pkts = []
 for i in range(num_broadcast):
-    pkt = make_IP_pkt(src_MAC="aa:bb:cc:dd:ee:ff", dst_MAC=routerMAC[0],
+    pkt = make_IP_pkt(src_MAC="aa:bb:cc:dd:ee:ff", dst_MAC=routerMAC[i%4],
                       EtherType=0x800, src_IP="192.168.0.1",
-                      dst_IP="192.168.1.1", pkt_len=100)
+                      dst_IP=routerIP[i%4], pkt_len=100)
 
     nftest_send_phy('nf2c0', pkt)
+    nftest_send_phy('nf2c1', pkt)
     nftest_expect_phy('nf2c1', pkt)
-    if not isHW():
-        nftest_expect_phy('nf2c2', pkt)
-        nftest_expect_phy('nf2c3', pkt)
+    nftest_expect_phy('nf2c0', pkt)
+#    if not isHW():
+#        nftest_expect_phy('nf2c2', pkt)
+#        nftest_expect_phy('nf2c3', pkt)
 
 nftest_barrier()
 
