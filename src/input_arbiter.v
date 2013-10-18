@@ -1,4 +1,6 @@
 /* vim:set shiftwidth=3 softtabstop=3 expandtab: */
+/* (c) Lucas Brasilino <lucas.brasilino@gmail.com>
+   Based on Round Robin Input Arbiter from NetFPGA Gateware */
 `timescale 1ns/1ps
 
   module input_arbiter
@@ -7,7 +9,7 @@
       parameter UDP_REG_SRC_WIDTH = 2,
       parameter STAGE_NUMBER = 2,
       parameter NUM_QUEUES = 8,
-      parameter MAX_WEIGHT = 7,
+      parameter MAX_WEIGHT = 127,
       parameter GCD = 1
       )
 
@@ -238,7 +240,7 @@
 
    assign queue_weight[3'b000] = 1;
    assign queue_weight[3'b001] = 1;
-   assign queue_weight[3'b010] = 1;
+   assign queue_weight[3'b010] = 127;
    assign queue_weight[3'b011] = 7;
    assign queue_weight[3'b100] = 7;
    assign queue_weight[3'b101] = 7;
