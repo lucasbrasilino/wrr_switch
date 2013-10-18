@@ -375,6 +375,7 @@
 `define IN_ARB_LAST_PKT_WORD_1_LO  6'h5
 `define IN_ARB_LAST_PKT_CTRL_1     6'h6
 `define IN_ARB_STATE               6'h7
+`define IN_ARB_MAC1_QUEUE_WEIGHT   6'h8
 
 // Name: learning_cam_switch
 // Description: Output port lookup for learning switch

@@ -1,6 +1,7 @@
 #!/bin/env python
 
 from NFTest import *
+from reg_defines_wrr_switch import *
 
 phy2loop0 = ('../connections/conn', [])
 
@@ -15,12 +16,16 @@ for i in range(4):
 
 num_broadcast = 10
 
+mac1_weight = 0x1;
+nftest_regwrite(IN_ARB_MAC1_QUEUE_WEIGHT_REG(),mac1_weight);
+
 pkts = []
 for i in range(num_broadcast):
     pkt = make_IP_pkt(src_MAC="aa:bb:cc:dd:ee:ff", dst_MAC=routerMAC[i%4],
                       EtherType=0x800, src_IP="192.168.0.1",
                       dst_IP=routerIP[i%4], pkt_len=100)
 
+    nftest_regread_expect(IN_ARB_MAC1_QUEUE_WEIGHT_REG(),mac1_weight);
     nftest_send_phy('nf2c0', pkt)
     nftest_send_phy('nf2c1', pkt)
     nftest_expect_phy('nf2c1', pkt)

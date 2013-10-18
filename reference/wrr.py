@@ -18,7 +18,7 @@ index = -1
 cw = 0;
 queues = [("MAC0",1),("MAC1",2),("MAC2",3),("MAC3",4)]
 results = []
-maxi = 4;
+maxi = 127;
 gcd=1
 
 for i in range (0,1000):

@@ -9,7 +9,7 @@
       parameter UDP_REG_SRC_WIDTH = 2,
       parameter STAGE_NUMBER = 2,
       parameter NUM_QUEUES = 8,
-      parameter MAX_WEIGHT = 127,
+      parameter MAX_WEIGHT = 63,
       parameter GCD = 1
       )
 
@@ -133,6 +133,8 @@
 
    reg                                 eop;
 
+   wire [`CPCI_NF2_DATA_WIDTH-1:0]     mac1_queue_weight;
+
    reg [MAX_WEIGHT_WIDTH:0]            cur_weight; 
    reg [MAX_WEIGHT_WIDTH:0]            cur_weight_next; 
    wire [MAX_WEIGHT_WIDTH:0]           queue_weight[NUM_QUEUES-1:0];
@@ -191,6 +193,43 @@
       .reset            (reset)
    );
 
+   generic_regs
+   #(
+      .UDP_REG_SRC_WIDTH   (UDP_REG_SRC_WIDTH),
+      .TAG                 (`IN_ARB_BLOCK_ADDR),
+      .REG_ADDR_WIDTH      (`IN_ARB_REG_ADDR_WIDTH),                       // Width of block addresses
+      .NUM_COUNTERS        (0),                       // How many counters
+      .NUM_SOFTWARE_REGS   (1),                       // How many sw regs
+      .NUM_HARDWARE_REGS   (0)                        // How many hw regs
+   ) mac1_queue_weight_regs (
+      .reg_req_in       (reg_req_in),
+      .reg_ack_in       (reg_ack_in),
+      .reg_rd_wr_L_in   (reg_rd_wr_L_in),
+      .reg_addr_in      (reg_addr_in),
+      .reg_data_in      (reg_data_in),
+      .reg_src_in       (reg_src_in),
+   
+      .reg_req_out      (reg_req_out),
+      .reg_ack_out      (reg_ack_out),
+      .reg_rd_wr_L_out  (reg_rd_wr_L_out),
+      .reg_addr_out     (reg_addr_out),
+      .reg_data_out     (reg_data_out),
+      .reg_src_out      (reg_src_out),
+
+      // --- counters interface
+      .counter_updates  (),
+      .counter_decrement(),
+
+      // --- SW regs interface 
+      .software_regs    (mac1_queue_weight),
+
+      // --- HW regs interface
+      .hardware_regs    (),
+
+      .clk              (clk),
+      .reset            (reset)
+    );
+
    // ------------- Logic ------------
 
    assign in_data[0]         = in_data_0;
@@ -240,12 +279,12 @@
 
    assign queue_weight[3'b000] = 1;
    assign queue_weight[3'b001] = 1;
-   assign queue_weight[3'b010] = 127;
-   assign queue_weight[3'b011] = 7;
-   assign queue_weight[3'b100] = 7;
-   assign queue_weight[3'b101] = 7;
-   assign queue_weight[3'b110] = 7;
-   assign queue_weight[3'b111] = 7;
+   assign queue_weight[3'b010] = 63;
+   assign queue_weight[3'b011] = 1;
+   assign queue_weight[3'b100] = 1;
+   assign queue_weight[3'b101] = 1;
+   assign queue_weight[3'b110] = 1;
+   assign queue_weight[3'b111] = 1;
    assign queue_weight_sel = queue_weight[cur_queue];
 
    always @(*) begin

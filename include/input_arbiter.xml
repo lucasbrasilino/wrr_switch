@@ -39,5 +39,10 @@
 			<nf:name>state</nf:name>
 			<nf:description>State of the internal state machine</nf:description>
 		</nf:register>
+               <nf:register>
+                  <nf:name>mac1_queue_weight</nf:name>
+                        <nf:description>The weight of MAC1 queue</nf:description>
+                        <nf:type>generic_software32</nf:type>
+                </nf:register>
 	</nf:registers>
 </nf:module>
