@@ -9,7 +9,7 @@
       parameter UDP_REG_SRC_WIDTH = 2,
       parameter STAGE_NUMBER = 2,
       parameter NUM_QUEUES = 8,
-      parameter MAX_WEIGHT = 63,
+      parameter MAX_WEIGHT = 127,
       parameter GCD = 1
       )
 
@@ -192,7 +192,7 @@
       .clk              (clk),
       .reset            (reset)
    );
-
+/*
    generic_regs
    #(
       .UDP_REG_SRC_WIDTH   (UDP_REG_SRC_WIDTH),
@@ -229,7 +229,7 @@
       .clk              (clk),
       .reset            (reset)
     );
-
+*/
    // ------------- Logic ------------
 
    assign in_data[0]         = in_data_0;
@@ -279,7 +279,7 @@
 
    assign queue_weight[3'b000] = 1;
    assign queue_weight[3'b001] = 1;
-   assign queue_weight[3'b010] = 63;
+   assign queue_weight[3'b010] = MAX_WEIGHT;
    assign queue_weight[3'b011] = 1;
    assign queue_weight[3'b100] = 1;
    assign queue_weight[3'b101] = 1;
